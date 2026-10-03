@@ -180,3 +180,6 @@ async def factor_endpoint(request: Request):
     except c.EvaluationError as ee:
         raise HTTPException(status_code = 400,
                             detail = f"Evaluation error: {ee}")
+    except Exception as e:
+        raise HTTPException(status_code=400,
+                            detail=f"Error: {e}")
