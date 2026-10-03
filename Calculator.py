@@ -1,21 +1,6 @@
-"""
-Solutions to module 4 - A calculator
-Student: Sami Al Saati
-Mail: sami.al-saati.4936@student.uu.se
-"""
-
-"""
-Note:
-The program is only working for a very tiny set of operations.
-You have to add and/or modify code in ALL functions as well as add some new functions.
-Use the syntax charts when you write the functions!
-However, the class CalculatorSyntaxError is complete as well as handling in main
-of CalculatorSyntaxError and TokenError.
-"""
-
 import math
 from tokenize import TokenError  
-from MA4tokenizer import TokenizeWrapper
+from tokenizer import TokenizeWrapper
 
 
 class CalculatorSyntaxError(Exception):
@@ -50,11 +35,8 @@ def log(n):
 
 
 def statement(wtok, variables):
-    """ See syntax chart for statement"""
     result = assignment(wtok, variables)
-    #** should not be recognized, so the current token is still at ** and not at the end
     if not wtok.is_at_end():
-        # or expected end of line?
         raise CalculatorSyntaxError("Unexpected token")
 
     variables['ans'] = result
@@ -62,7 +44,6 @@ def statement(wtok, variables):
 
 
 def assignment(wtok, variables):
-    """ See syntax chart for assignment"""
     result = expression(wtok, variables)
     while wtok.get_current() == '=':
         wtok.next()
@@ -76,7 +57,6 @@ def assignment(wtok, variables):
 
 
 def expression(wtok, variables):
-    """ See syntax chart for expression"""
     result = term(wtok, variables)
     while wtok.get_current() == '+' or wtok.get_current() == '-':
         op = wtok.get_current()
@@ -89,7 +69,6 @@ def expression(wtok, variables):
 
 
 def term(wtok, variables):
-    """ See syntax chart for term"""
     result = factor(wtok, variables)
     while wtok.get_current() == '*' or wtok.get_current() == '/' or wtok.get_current() == '%':
         op = wtok.get_current()
@@ -110,7 +89,6 @@ def term(wtok, variables):
 
 
 def factor(wtok, variables):
-    """ See syntax chart for factor"""
     functions = {'sin': math.sin,
                  'cos': math.cos,
                  'exp': math.exp,
@@ -138,7 +116,6 @@ def factor(wtok, variables):
         if wtok.get_current() != '(':
             raise CalculatorSyntaxError("Expected '('")
 
-        # next again to get inside the function call, to extract argument
         wtok.next()
 
         argument = assignment(wtok, variables)
@@ -177,14 +154,13 @@ def main():
        raised exceptions.
     Starts with reading the init file
     """
-    
+
     print("Numerical calculator")
     variables = {"ans": 0.0,
                  "PI": math.pi,
                  "E": math.e
                  }
-    # Note: The unit test file initiate variables in this way. If your implementation 
-    # requires another initiation you have to update the test file accordingly.
+
     init_file = 'MA4init.txt'
     lines_from_file = ''
     try:

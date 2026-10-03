@@ -1,13 +1,3 @@
-"""
-Interface class to the tokenizer module.
-
-Versions:
-2026-09-20: Use token numerical values from token module rather than hardcoding,
-            use our own functions to DRY more, fix __str__
-2021-03-27: Checking for comments (#) in is_at_end altered since 55 didn't work everywhere
-2021-03-01: Comments (#) added
-2020-09-05:
-"""
 import io
 import tokenize
 import token
