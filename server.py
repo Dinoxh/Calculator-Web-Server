@@ -1,9 +1,12 @@
 from fastapi import FastAPI, Request, HTTPException
 import Calculator as c
+from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 
-variables = {"ans": 0.0,
+app.add_middleware(SessionMiddleware, secret_key="session-key")
+
+default_variables = {"ans": 0.0,
              "PI": c.math.pi,
              "E": c.math.e
              }
@@ -13,11 +16,17 @@ async def statement_endpoint(request: Request):
     #Decode the request from client
     line = (await request.body()).decode().strip()
 
+    #copy this clients saved variables from the session, or the default variables if none yet
+    variables = dict(request.session.get("vars", default_variables))
+
     wtok = c.TokenizeWrapper(line)
 
     #Try to return response
     try:
         result = c.statement(wtok, variables)
+
+        request.session["vars"] = variables
+
         return result
 
     except c.CalculatorSyntaxError as se:
