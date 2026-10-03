@@ -1,25 +1,33 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Request, HTTPException
+import Calculator as c
 
 app = FastAPI()
 
+variables = {"ans": 0.0,
+             "PI": c.math.pi,
+             "E": c.math.e
+             }
 
-class Item(BaseModel):
-    name: str
-    price: float
-    is_offer: bool | None = None
+@app.post("/statement")
+async def statement_endpoint(request: Request):
+    #Decode the request from client
+    line = (await request.body()).decode().strip()
 
+    wtok = c.TokenizeWrapper(line)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+    #Try to return response
+    try:
+        result = c.statement(wtok, variables)
+        return result
 
+    except c.CalculatorSyntaxError as se:
+        raise HTTPException(status_code = 400,
+                            detail = f"Syntax Error: Error occurred at token '{wtok.get_current()}' just after token '{wtok.get_previous()}'")
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}
+    except c.TokenError as te:
+        raise HTTPException(status_code = 400,
+                            detail = f"*** Syntax error: Unbalanced parentheses")
 
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+    except c.EvaluationError as ee:
+        raise HTTPException(status_code = 400,
+                            detail = f"Evaluation error: {ee}")
