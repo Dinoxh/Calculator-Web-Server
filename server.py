@@ -48,6 +48,9 @@ async def statement_endpoint(request: Request):
     except c.EvaluationError as ee:
         raise HTTPException(status_code = 400,
                             detail = f"Evaluation error: {ee}")
+    except Exception as e:
+        raise HTTPException(status_code=400,
+                            detail=f"Error: {e}")
 
 @app.post("/assignment")
 async def assignment_endpoint(request: Request):
@@ -81,6 +84,9 @@ async def assignment_endpoint(request: Request):
     except c.EvaluationError as ee:
         raise HTTPException(status_code = 400,
                             detail = f"Evaluation error: {ee}")
+    except Exception as e:
+        raise HTTPException(status_code=400,
+                            detail=f"Error: {e}")
 
 @app.post("/expression")
 async def expression_endpoint(request: Request):
@@ -114,6 +120,9 @@ async def expression_endpoint(request: Request):
     except c.EvaluationError as ee:
         raise HTTPException(status_code = 400,
                             detail = f"Evaluation error: {ee}")
+    except Exception as e:
+        raise HTTPException(status_code=400,
+                            detail=f"Error: {e}")
 
 @app.post("/term")
 async def term_endpoint(request: Request):
@@ -147,6 +156,9 @@ async def term_endpoint(request: Request):
     except c.EvaluationError as ee:
         raise HTTPException(status_code = 400,
                             detail = f"Evaluation error: {ee}")
+    except Exception as e:
+        raise HTTPException(status_code=400,
+                            detail=f"Error: {e}")
 
 @app.post("/factor")
 async def factor_endpoint(request: Request):
