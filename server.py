@@ -5,9 +5,11 @@ from starlette.middleware.sessions import SessionMiddleware
 
 # Start server: uv run fastapi dev server.py --port [port]
 
-#Paste to create shortcut:
-#calc() { curl -s -w '  [%{http_code}]\n' --cookie cookiefile --cookie-jar cookiefile -H 'Content-Type: text/plain' -X POST -d "$2" "http://127.0.0.1:4998/$1"; }
-# calc [endpoint] ['example']
+#shortcut(set port for server to run on):
+#PORT=5000; calc() { curl -s --cookie cookiefile --cookie-jar cookiefile -H 'Content-Type: text/plain' -X POST -d "$2" "http://127.0.0.1:$PORT/$1"; }
+
+# rm cookiefile to clear cookies
+#calc endpoint($1) 'example ($2)'
 
 
 app = FastAPI()
@@ -23,7 +25,7 @@ async def statement_endpoint(request: Request):
     #Decode the request from client
     line = (await request.body()).decode().strip()
 
-    #Copy this clients saved variables from the session, or the default variables if none yet
+    #takes the variables saved in the cookies, or the default variables if none yet
     variables = dict(request.session.get("vars", default_variables))
 
     wtok = c.TokenizeWrapper(line)
@@ -55,16 +57,18 @@ async def statement_endpoint(request: Request):
 @app.post("/assignment")
 async def assignment_endpoint(request: Request):
     #Decode the request from client
-    line = (await request.body()).decode().strip()
 
     #Copy this clients saved variables from the session, or the default variables if none yet
     variables = dict(request.session.get("vars", default_variables))
 
-    wtok = c.TokenizeWrapper(line)
-
     #Try to return response
     try:
+        line = (await request.body()).decode().strip()
+
+        wtok = c.TokenizeWrapper(line)
+
         result = c.assignment(wtok, variables)
+
         if not wtok.is_at_end():
             raise c.CalculatorSyntaxError("Unexpected token")
 
