@@ -114,6 +114,9 @@ function shake(): void {
   field.classList.remove("shake");
   void field.offsetWidth; // restart the animation if it's already running
   field.classList.add("shake");
+  // A double tap of haptics in the same frame as the shake (Android; a no-op elsewhere).
+  // Errors only: feedback on every success would teach people to ignore it.
+  navigator.vibrate?.([12, 60, 12]);
 }
 field.addEventListener("animationend", () => field.classList.remove("shake"));
 input.addEventListener("input", () => field.classList.remove("shake"));
