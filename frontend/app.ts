@@ -254,7 +254,7 @@ mountKeypad(keys, input);
 
 // ---------- Scroll edges ----------
 
-// Hairlines under/over the bars only when content is actually behind them
+// Scroll-edge fades on the bars only when content is actually behind them
 function updateEdges(): void {
   const root = document.documentElement;
   top.classList.toggle("edge", root.scrollTop > 0);
