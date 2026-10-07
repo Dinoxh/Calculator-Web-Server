@@ -186,6 +186,82 @@ h1 {
   padding: 0;
 }
 
+.entry { animation: entry-in 350ms var(--ease-out); }
+
+/* New results rise out of the composer they were typed into */
+@keyframes entry-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+.entry-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  text-align: right;
+  -webkit-user-select: text;
+  user-select: text;
+  transition: background-color 150ms ease-out;
+}
+.entry-button:active { background: var(--fill); transition: none; }
+@media (hover: hover) {
+  .entry-button:hover { background: var(--fill); }
+}
+
+.entry-line {
+  max-width: 100%;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9375rem;
+  color: var(--label-2);
+  overflow-wrap: anywhere;
+}
+
+.entry-mode {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--fill);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.entry-result {
+  max-width: 100%;
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* The latest result is the hero, like Calculator's display */
+.entry:last-child .entry-result {
+  font-size: 2.75rem;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+}
+
+.entry.error .entry-result,
+.entry.error:last-child .entry-result {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: var(--red);
+}
+
 /* ---------- Composer ---------- */
 
 .segmented {
@@ -289,3 +365,15 @@ h1 {
   transition: transform 150ms var(--ease-out), opacity 150ms ease-out;
 }
 .equals:active { transform: scale(0.9); opacity: 0.8; transition-duration: 50ms; }
+
+/* Rejected input: a short damped shake, like a wrong passcode */
+.field.shake {
+  animation: shake 400ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  box-shadow: 0 0 0 1.5px var(--red);
+}
+@keyframes shake {
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(2px); }
+}
