@@ -1,6 +1,7 @@
 import { evaluate, resetVariables, type Endpoint } from "./api.js";
 import { formatRaw } from "./format.js";
 import { mountVariables } from "./variables.js";
+import { mountKeypad } from "./keypad.js";
 
 function $<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -17,6 +18,7 @@ const entries = $<HTMLOListElement>("entries");
 const modeHint = $<HTMLElement>("mode-hint");
 const resetButton = $<HTMLButtonElement>("reset");
 const varsList = $<HTMLUListElement>("vars");
+const keys = $<HTMLElement>("keys");
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -169,6 +171,7 @@ resetButton.addEventListener("click", () => {
 // ---------- Variables ----------
 
 mountVariables(varsList, input);
+mountKeypad(keys, input);
 
 // ---------- Scroll edges ----------
 
