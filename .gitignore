@@ -11,3 +11,8 @@ venv/
 
 # JetBrains IDEs
 .idea/
+
+# Frontend (TypeScript compiles frontend/ into static/)
+node_modules/
+static/*.js
+static/*.js.map
