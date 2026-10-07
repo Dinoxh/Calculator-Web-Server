@@ -1,9 +1,10 @@
-import { evaluate, resetVariables, type Endpoint } from "./api.js";
+import { evaluate, getVariables, resetVariables, type Endpoint, type Variables } from "./api.js";
 import { formatRaw } from "./format.js";
 import { mountVariables } from "./variables.js";
 import { mountKeypad } from "./keypad.js";
 import { flipTape } from "./flip.js";
 import { mountSegmented } from "./segmented.js";
+import { showToast, type Toast } from "./toast.js";
 
 function $<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -135,6 +136,8 @@ composer.addEventListener("submit", (e) => {
   }
 
   const mode = currentMode();
+  undo?.dismiss(); // a new calculation moves on; undoing the reset now would be surprising
+  undo = null;
   history.push(line);
   historyIndex = history.length;
 
@@ -171,8 +174,36 @@ input.addEventListener("keydown", (e) => {
 
 // ---------- Reset ----------
 
+const DEFAULTS: Variables = { ans: 0, PI: Math.PI, E: Math.E };
+let undo: Toast | null = null;
+
+// Forgiveness over confirmation: Reset happens immediately, with an Undo to take it back
+function restore(vars: Variables, tape: Element[], lines: string[]): void {
+  queue = queue.then(async () => {
+    // There's no "set variables" endpoint, so replay them as assignments (which leave ans alone)
+    for (const [name, value] of Object.entries(vars)) {
+      if (name === "ans" || DEFAULTS[name] === value) continue;
+      await evaluate("assignment", `${value} = ${name}`);
+    }
+    if (vars.ans !== undefined && vars.ans !== DEFAULTS.ans) await evaluate("statement", String(vars.ans));
+
+    entries.replaceChildren(...tape); // re-inserted entries rise back in via @starting-style
+    app.classList.toggle("has-entries", tape.length > 0);
+    history.splice(0, history.length, ...lines);
+    historyIndex = history.length;
+    updateEdges();
+    document.dispatchEvent(new CustomEvent("variables-changed"));
+    scrollTo({ top: document.documentElement.scrollHeight });
+  });
+}
+
 resetButton.addEventListener("click", () => {
   queue = queue.then(async () => {
+    let snapshot: Variables | null = null;
+    try { snapshot = await getVariables(); } catch { /* reset anyway; just no undo */ }
+    const tape = [...entries.children];
+    const lines = [...history];
+
     try {
       await resetVariables();
     } catch {
@@ -193,7 +224,24 @@ resetButton.addEventListener("click", () => {
     input.value = "";
     updateEdges();
     document.dispatchEvent(new CustomEvent("variables-changed"));
+
+    if (snapshot) {
+      const vars = snapshot;
+      undo = showToast(composer, "Variables and history cleared", {
+        label: "Undo",
+        run: () => restore(vars, tape, lines),
+      }, reducedMotion);
+    }
   });
+});
+
+// ⌘Z / Ctrl+Z undoes the reset while its toast is up (and the field has nothing of its own to undo)
+addEventListener("keydown", (e) => {
+  if (!undo || e.key.toLowerCase() !== "z" || !(e.metaKey || e.ctrlKey) || e.shiftKey) return;
+  if (document.activeElement === input && input.value) return;
+  e.preventDefault();
+  undo.run();
+  undo = null;
 });
 
 // ---------- Variables ----------

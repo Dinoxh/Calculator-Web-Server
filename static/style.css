@@ -49,6 +49,8 @@
   --orange-ink: color-mix(in srgb, var(--orange) min(100%, calc(var(--ink-mix) + 12%)), #000);
   --purple-ink: color-mix(in srgb, var(--purple) var(--ink-mix), #000);
 
+  --toast-bg: rgba(28, 28, 30, 0.88);
+
   --gutter: 16px;
   --column: 600px;
   /* Bars span the window; their content lines up with the centred column */
@@ -81,6 +83,7 @@
     --accent: #0a84ff;
     --red: #ff453a;
     --material: rgba(28, 28, 30, 0.55);
+    --toast-bg: rgba(58, 58, 60, 0.9);
     --thumb: #636366;
     --thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
   }
@@ -610,6 +613,49 @@ h1 {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ---------- Toast ---------- */
+
+/* A dark capsule rising out of the composer: heavier material than the bar it sits above */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% - 2 * var(--gutter));
+  padding: 6px 6px 6px 16px;
+  border-radius: 22px;
+  background: var(--toast-bg);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), inset 0 0.5px 0 rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  transform: translate(-50%, 0);
+  transform-origin: 50% 100%;
+  transition: opacity 250ms var(--ease-out), transform 250ms var(--ease-out);
+}
+@starting-style {
+  .toast { opacity: 0; transform: translate(-50%, 8px) scale(0.96); }
+}
+
+.toast-action {
+  position: relative;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  color: #ff9f0a;
+  font-weight: 600;
+  transition: background-color var(--press) ease;
+}
+.toast-action:active { background: rgba(255, 255, 255, 0.14); }
+.toast-action::before { content: ""; position: absolute; inset: -4px; }
+
 /* Rejected input: a short damped shake, like a wrong passcode */
 .field.shake {
   animation: shake 400ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
@@ -634,6 +680,7 @@ h1 {
   .segmented.pressed .thumb { scale: none; }
   .chip:active, .key:active, .equals:active { transform: none; }
   .chip.changed { animation-name: chip-flash; }
+  @starting-style { .toast { transform: translate(-50%, 0); } }
   .equals.busy::after { animation: busy-pulse 1s ease-in-out infinite alternate; border-color: #ffffff; }
   @keyframes busy-pulse { to { opacity: 0.3; } }
   @starting-style { .chips.ready .chip { transform: none; } }
@@ -645,6 +692,7 @@ h1 {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+  .toast { background: #1c1c1e; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
 @media (prefers-contrast: more) {
@@ -659,4 +707,5 @@ h1 {
   .bar.top { box-shadow: 0 1px 0 var(--hairline); }
   .bar.bottom { box-shadow: 0 -1px 0 var(--hairline); }
   .chip, .segmented { box-shadow: inset 0 0 0 1px var(--hairline); }
+  .toast { background: #000000; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
