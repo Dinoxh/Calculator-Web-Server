@@ -82,6 +82,8 @@ function addEntry(mode: Endpoint, line: string, text: string, isError: boolean):
   const resultEl = document.createElement("span");
   resultEl.className = "entry-result";
   resultEl.textContent = text;
+  // Like Calculator, long numbers shrink rather than wrap mid-number
+  if (!isError && text.length > 14) resultEl.classList.add(text.length > 28 ? "longer" : "long");
 
   button.append(lineEl, resultEl);
   button.addEventListener("click", () => {

@@ -304,6 +304,11 @@ h1 {
   letter-spacing: -0.025em;
 }
 
+.entry .entry-result.long { font-size: 1.375rem; }
+.entry:last-child .entry-result.long { font-size: 1.75rem; letter-spacing: -0.01em; }
+.entry .entry-result.longer,
+.entry:last-child .entry-result.longer { font-size: 1.0625rem; font-weight: 400; letter-spacing: 0; }
+
 .entry.error .entry-result,
 .entry.error:last-child .entry-result {
   font-size: 0.9375rem;
