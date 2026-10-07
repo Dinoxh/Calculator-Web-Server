@@ -2,6 +2,7 @@ import { evaluate, resetVariables, type Endpoint } from "./api.js";
 import { formatRaw } from "./format.js";
 import { mountVariables } from "./variables.js";
 import { mountKeypad } from "./keypad.js";
+import { flipTape } from "./flip.js";
 
 function $<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -94,7 +95,8 @@ function addEntry(mode: Endpoint, line: string, text: string, isError: boolean):
   });
 
   li.append(button);
-  entries.append(li);
+  // New entry rises in via @starting-style; FLIP glides the existing ones out of its way
+  flipTape(entries, () => entries.append(li), reducedMotion.matches);
   app.classList.add("has-entries");
 
   scrollTo({ top: document.documentElement.scrollHeight, behavior: reducedMotion.matches ? "auto" : "smooth" });
@@ -162,6 +164,13 @@ resetButton.addEventListener("click", () => {
       addEntry(currentMode(), "reset", "Couldn't reset variables.", true);
       return;
     }
+    // Fade the tape away rather than blanking it
+    await entries.animate(
+      reducedMotion.matches
+        ? { opacity: [1, 0] }
+        : { opacity: [1, 0], transform: ["none", "scale(0.98)"], transformOrigin: ["50% 100%", "50% 100%"] },
+      { duration: 200, easing: "cubic-bezier(0.23, 1, 0.32, 1)" },
+    ).finished.catch(() => {});
     entries.replaceChildren();
     app.classList.remove("has-entries");
     history.length = 0;
