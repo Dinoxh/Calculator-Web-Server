@@ -259,9 +259,9 @@ h1 {
 }
 .chip:active { transform: scale(0.96); background: color-mix(in srgb, var(--hue, var(--label)) 22%, transparent); }
 
-/* A newly assigned variable grows into the row */
+/* A newly assigned variable grows into the row (not the initial set on page load) */
 @starting-style {
-  .chip { opacity: 0; transform: scale(0.9); }
+  .chips.ready .chip { opacity: 0; transform: scale(0.9); }
 }
 
 .chip-name {
@@ -598,7 +598,7 @@ h1 {
   .segmented .thumb { transition: none; }
   .chip:active, .key:active, .equals:active { transform: none; }
   .chip.changed { animation-name: chip-flash; }
-  @starting-style { .chip { transform: none; } }
+  @starting-style { .chips.ready .chip { transform: none; } }
 }
 
 @media (prefers-reduced-transparency: reduce) {

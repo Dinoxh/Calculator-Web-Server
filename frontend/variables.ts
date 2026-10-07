@@ -92,6 +92,7 @@ export function mountVariables(list: HTMLUListElement, input: HTMLInputElement):
         list.append(entry.li);
       }
     }
+    list.classList.add("ready");
   }
 
   document.addEventListener("variables-changed", () => void refresh());
