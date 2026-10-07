@@ -24,6 +24,10 @@ const keys = $<HTMLElement>("keys");
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
+// iOS Safari only applies :active while a touch listener exists; without this,
+// presses get no feedback until the tap is already over
+document.addEventListener("touchstart", () => {}, { passive: true });
+
 // ---------- Endpoint picker ----------
 
 const hints: Record<Endpoint, string> = {

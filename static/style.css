@@ -153,6 +153,14 @@ code {
   outline-offset: 2px;
 }
 
+/* Small controls keep their look but get a 44pt hit area (Apple's minimum) */
+.chip, .key, .equals, .text-button { position: relative; }
+.chip::before, .key::before, .equals::before, .text-button::before {
+  content: "";
+  position: absolute;
+  inset: min(0px, (100% - 2.75rem) / 2);
+}
+
 /* ---------- Layout ---------- */
 
 .app {
@@ -227,8 +235,8 @@ h1 {
 .chips {
   display: flex;
   gap: 6px;
-  margin: 10px calc(-1 * var(--gutter)) 0;
-  padding: 0 var(--gutter);
+  margin: 3px calc(-1 * var(--gutter)) -7px;
+  padding: 7px var(--gutter);
   list-style: none;
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -489,8 +497,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 0 calc(-1 * var(--gutter)) 10px;
-  padding: 0 var(--gutter);
+  margin: -4px calc(-1 * var(--gutter)) 6px;
+  padding: 4px var(--gutter);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
