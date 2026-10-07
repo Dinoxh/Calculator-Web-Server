@@ -1,6 +1,28 @@
 /* ---------- Tokens ---------- */
 
+/* Registered so it can transition: the whole UI shifts hue with the endpoint */
+@property --mode {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #007aff;
+}
+
 :root {
+  /* Apple system hues */
+  --blue: #007aff;
+  --green: #34c759;
+  --indigo: #5856d6;
+  --orange: #ff9500;
+  --pink: #ff2d55;
+  --purple: #af52de;
+  --teal: #30b0c7;
+  --mint: #00c7be;
+  --cyan: #32ade6;
+  --red-hue: #ff3b30;
+  /* How much of a hue survives when it's used for text: darkened in light mode for 4.5:1 */
+  --ink-mix: 65%;
+  --aurora: 1;
+
   --bg: #f2f2f7;
   --surface: #ffffff;
   --label: #000000;
@@ -12,7 +34,7 @@
   --accent: #007aff;
   --accent-label: #ffffff;
   --red: #ff3b30;
-  --material: rgba(242, 242, 247, 0.72);
+  --material: rgba(250, 250, 252, 0.6);
   --thumb: #ffffff;
   --thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
 
@@ -21,12 +43,33 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --press: 160ms;
 
+  --mode: var(--blue);
+  --mode-ink: color-mix(in srgb, var(--mode) var(--ink-mix), #000);
+  /* Operators are glyphs (3:1 is enough), so they keep more of the orange */
+  --orange-ink: color-mix(in srgb, var(--orange) min(100%, calc(var(--ink-mix) + 12%)), #000);
+  --purple-ink: color-mix(in srgb, var(--purple) var(--ink-mix), #000);
+
   --gutter: 16px;
+  --column: 600px;
+  /* Bars span the window; their content lines up with the centred column */
+  --inset: max(var(--gutter), (100% - var(--column)) / 2);
   --radius: 12px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --blue: #0a84ff;
+    --green: #30d158;
+    --indigo: #5e5ce6;
+    --orange: #ff9f0a;
+    --pink: #ff375f;
+    --purple: #bf5af2;
+    --teal: #40c8e0;
+    --mint: #63e6e2;
+    --cyan: #64d2ff;
+    --red-hue: #ff453a;
+    --ink-mix: 100%;
+    --aurora: 0.75;
     --bg: #000000;
     --surface: #1c1c1e;
     --label: #ffffff;
@@ -37,11 +80,19 @@
     --hairline: rgba(84, 84, 88, 0.6);
     --accent: #0a84ff;
     --red: #ff453a;
-    --material: rgba(22, 22, 24, 0.72);
+    --material: rgba(28, 28, 30, 0.55);
     --thumb: #636366;
     --thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
   }
 }
+
+/* ---------- Endpoint color ---------- */
+
+:root { transition: --mode 250ms ease; }
+:root:has(#mode input[value="assignment"]:checked) { --mode: var(--green); }
+:root:has(#mode input[value="expression"]:checked) { --mode: var(--indigo); }
+:root:has(#mode input[value="term"]:checked) { --mode: var(--purple); }
+:root:has(#mode input[value="factor"]:checked) { --mode: var(--pink); }
 
 /* ---------- Base ---------- */
 
@@ -58,6 +109,21 @@ body {
   background: var(--bg);
   color: var(--label);
   font-size: 1.0625rem; /* 17px, the iOS body size */
+}
+
+/* Static aurora behind everything; the translucent bars pick it up through their blur.
+   Deliberately not animated: a looping background is distracting and vestibular-unfriendly. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 55% at 0% 0%, color-mix(in srgb, var(--mode) calc(30% * var(--aurora)), transparent), transparent 70%),
+    radial-gradient(60% 50% at 100% 0%, color-mix(in srgb, var(--purple) calc(20% * var(--aurora)), transparent), transparent 70%),
+    radial-gradient(70% 55% at 100% 100%, color-mix(in srgb, var(--orange) calc(22% * var(--aurora)), transparent), transparent 70%),
+    radial-gradient(60% 50% at 0% 100%, color-mix(in srgb, var(--pink) calc(16% * var(--aurora)), transparent), transparent 70%);
 }
 
 button, input { font: inherit; color: inherit; }
@@ -92,9 +158,7 @@ code {
 .app {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
   min-height: 100dvh;
-  margin: 0 auto;
 }
 
 /* Translucent chrome: content scrolls underneath */
@@ -104,8 +168,8 @@ code {
   background: var(--material);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
-  padding-left: max(var(--gutter), env(safe-area-inset-left));
-  padding-right: max(var(--gutter), env(safe-area-inset-right));
+  padding-left: max(var(--inset), env(safe-area-inset-left));
+  padding-right: max(var(--inset), env(safe-area-inset-right));
 }
 
 .bar.top {
@@ -141,6 +205,10 @@ h1 {
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  background: linear-gradient(100deg, var(--mode-ink), var(--purple-ink) 55%, var(--orange-ink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .text-button {
@@ -209,7 +277,7 @@ h1 {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 16px var(--gutter);
+  padding: 16px var(--inset);
 }
 
 .empty {
@@ -276,11 +344,13 @@ h1 {
 }
 
 .entry-mode {
+  --tag: var(--blue);
   display: inline-block;
   margin-right: 8px;
   padding: 1px 6px;
   border-radius: 5px;
-  background: var(--fill);
+  background: color-mix(in srgb, var(--tag) 16%, transparent);
+  color: color-mix(in srgb, var(--tag) var(--ink-mix), #000);
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 0.6875rem;
   font-weight: 600;
@@ -288,6 +358,11 @@ h1 {
   text-transform: uppercase;
   vertical-align: 1px;
 }
+
+.entry-mode[data-mode="assignment"] { --tag: var(--green); }
+.entry-mode[data-mode="expression"] { --tag: var(--indigo); }
+.entry-mode[data-mode="term"] { --tag: var(--purple); }
+.entry-mode[data-mode="factor"] { --tag: var(--pink); }
 
 .entry-result {
   max-width: 100%;
@@ -360,7 +435,7 @@ h1 {
 }
 .segmented label span { transition: opacity 100ms ease-out; }
 .segmented label:active span { opacity: 0.5; transition: none; }
-.segmented input:checked + span { font-weight: 600; }
+.segmented input:checked + span { font-weight: 600; color: var(--mode-ink); }
 .segmented label:has(input:focus-visible) {
   outline: 3px solid color-mix(in srgb, var(--accent) 50%, transparent);
   border-radius: 7px;
@@ -385,6 +460,7 @@ h1 {
   font-size: 0.8125rem;
   color: var(--label-2);
 }
+.mode-hint code { color: var(--mode-ink); font-weight: 600; }
 
 .keys {
   display: flex;
@@ -411,11 +487,17 @@ h1 {
   font-size: 1.0625rem;
   transition: transform var(--press) var(--ease-out), background-color var(--press) ease;
 }
-.key.operator { font-size: 1.25rem; font-weight: 400; }
+.key.operator { font-size: 1.25rem; font-weight: 500; color: var(--orange-ink); }
+.key.paren { color: var(--label); }
 .key.function {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.9375rem;
-  color: var(--accent);
+  color: var(--purple-ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .key.operator:hover { background: color-mix(in srgb, var(--orange) 12%, var(--surface)); }
+  .key.function:hover { background: color-mix(in srgb, var(--purple) 12%, var(--surface)); }
+  .key.paren:hover { background: color-mix(in srgb, var(--label) 6%, var(--surface)); }
 }
 .key:active { transform: scale(0.95); background: var(--fill-strong); }
 
@@ -448,7 +530,10 @@ h1 {
   font-size: 1.0625rem; /* ≥16px so iOS doesn't zoom on focus */
 }
 .field input::placeholder { color: var(--label-3); }
-.field:focus-within { box-shadow: 0 0 0 1.5px var(--accent); }
+.field { transition: box-shadow 200ms ease; }
+.field:focus-within {
+  box-shadow: 0 0 0 1.5px var(--mode), 0 6px 20px color-mix(in srgb, var(--mode) 22%, transparent);
+}
 
 .equals {
   flex: none;
@@ -456,10 +541,12 @@ h1 {
   height: 36px;
   border: 0;
   border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-label);
+  /* Calculator's orange */
+  background: linear-gradient(180deg, #ffa51f, #f07400);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--orange) 45%, transparent);
+  color: #ffffff;
   font-size: 1.375rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   transition: transform var(--press) var(--ease-out), opacity var(--press) ease;
 }
@@ -498,6 +585,8 @@ h1 {
 
 @media (prefers-contrast: more) {
   :root {
+    --ink-mix: 50%;
+    --aurora: 0.4;
     --label-2: var(--label);
     --hairline: var(--label);
     --fill: rgba(120, 120, 128, 0.28);

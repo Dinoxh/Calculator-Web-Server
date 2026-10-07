@@ -2,9 +2,12 @@ import { insertAtCaret, keepFocus } from "./insert.js";
 
 type Key = { label: string; insert: string; caretBack?: number; aria?: string };
 
-const operators: Key[] = [
+const parens: Key[] = [
   { label: "(", insert: "(" },
   { label: ")", insert: ")" },
+];
+
+const operators: Key[] = [
   { label: "+", insert: "+" },
   { label: "−", insert: "-", aria: "minus" },
   { label: "×", insert: "*", aria: "times" },
@@ -37,6 +40,7 @@ export function mountKeypad(row: HTMLElement, input: HTMLInputElement): void {
   divider.setAttribute("aria-hidden", "true");
 
   row.replaceChildren(
+    ...parens.map((k) => make(k, "paren")),
     ...operators.map((k) => make(k, "operator")),
     divider,
     ...functions.map((k) => make(k, "function")),

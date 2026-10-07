@@ -74,6 +74,7 @@ function addEntry(mode: Endpoint, line: string, text: string, isError: boolean):
   if (mode !== "statement") {
     const tag = document.createElement("span");
     tag.className = "entry-mode";
+    tag.dataset.mode = mode;
     tag.textContent = mode;
     lineEl.append(tag);
   }
