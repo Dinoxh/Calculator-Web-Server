@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "tsc && trap 'kill 0' INT TERM EXIT; tsc --watch --preserveWatchOutput & uv run fastapi dev server.py --port ${PORT:-4998}",
     "build": "tsc",
     "watch": "tsc --watch"
   },
