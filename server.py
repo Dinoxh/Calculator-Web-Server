@@ -22,6 +22,17 @@ default_variables = {"ans": 0.0,
              "E": c.math.e
              }
 
+@app.get("/vars")
+async def vars_endpoint(request: Request):
+    #Return this clients saved variables, or the default variables if none yet
+    return request.session.get("vars", default_variables)
+
+@app.post("/reset")
+async def reset_endpoint(request: Request):
+    #Forget this clients variables and go back to the defaults
+    request.session.pop("vars", None)
+    return default_variables
+
 @app.post("/statement")
 async def statement_endpoint(request: Request):
     #Decode the request from client
