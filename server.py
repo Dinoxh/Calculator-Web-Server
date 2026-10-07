@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request, HTTPException
 import Calculator as c
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 
 # Start server: uv run fastapi dev server.py --port [port]
@@ -199,3 +201,7 @@ async def factor_endpoint(request: Request):
     except Exception as e:
         raise HTTPException(status_code=400,
                             detail=f"Error: {e}")
+
+
+# Serve the frontend. Mounted last so the POST endpoints above take precedence.
+app.mount("/", StaticFiles(directory=Path(__file__).parent / "static", html=True), name="static")
