@@ -248,15 +248,26 @@ h1 {
   padding: 0 12px;
   border: 0;
   border-radius: 15px;
-  background: var(--fill);
+  background: color-mix(in srgb, var(--hue, var(--label)) 12%, transparent);
   white-space: nowrap;
   font-size: 0.875rem;
   line-height: 30px;
-  transition: transform var(--press) var(--ease-out), background-color var(--press) ease;
+  transition:
+    transform var(--press) var(--ease-out),
+    background-color var(--press) ease,
+    opacity 200ms var(--ease-out);
 }
-.chip:active { transform: scale(0.96); background: var(--fill-strong); }
+.chip:active { transform: scale(0.96); background: color-mix(in srgb, var(--hue, var(--label)) 22%, transparent); }
 
-.chip-name { font-weight: 600; }
+/* A newly assigned variable grows into the row */
+@starting-style {
+  .chip { opacity: 0; transform: scale(0.9); }
+}
+
+.chip-name {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--hue, var(--label)) var(--ink-mix), #000);
+}
 .chip-value {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -264,10 +275,14 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
-/* A variable that was just assigned flashes once */
-.chip.changed { animation: chip-changed 900ms ease-out; }
+/* A variable whose value just changed pops and flashes its hue once */
+.chip.changed { animation: chip-changed 600ms var(--ease-out); }
 @keyframes chip-changed {
-  from { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+  0% { background: color-mix(in srgb, var(--hue, var(--label)) 40%, transparent); transform: scale(1.06); }
+  30% { transform: scale(1); }
+}
+@keyframes chip-flash {
+  from { background: color-mix(in srgb, var(--hue, var(--label)) 40%, transparent); }
 }
 
 /* ---------- Tape (history) ---------- */
@@ -573,6 +588,8 @@ h1 {
   .field.shake { animation: none; }
   .segmented .thumb { transition: none; }
   .chip:active, .key:active, .equals:active { transform: none; }
+  .chip.changed { animation-name: chip-flash; }
+  @starting-style { .chip { transform: none; } }
 }
 
 @media (prefers-reduced-transparency: reduce) {
