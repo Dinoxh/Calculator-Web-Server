@@ -16,8 +16,10 @@
   --thumb: #ffffff;
   --thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
 
-  /* Critically damped feel: fast start, no overshoot */
-  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  /* Strong curves: fast start, no overshoot */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --press: 160ms;
 
   --gutter: 16px;
   --radius: 12px;
@@ -182,9 +184,9 @@ h1 {
   white-space: nowrap;
   font-size: 0.875rem;
   line-height: 30px;
-  transition: transform 150ms var(--ease-out), background-color 150ms ease-out;
+  transition: transform var(--press) var(--ease-out), background-color var(--press) ease;
 }
-.chip:active { transform: scale(0.95); background: var(--fill-strong); transition-duration: 50ms; }
+.chip:active { transform: scale(0.96); background: var(--fill-strong); }
 
 .chip-name { font-weight: 600; }
 .chip-value {
@@ -237,7 +239,7 @@ h1 {
   padding: 0;
 }
 
-.entry { animation: entry-in 350ms var(--ease-out); }
+.entry { animation: entry-in 250ms var(--ease-out); }
 
 /* New results rise out of the composer they were typed into */
 @keyframes entry-in {
@@ -261,7 +263,7 @@ h1 {
   transition: background-color 150ms ease-out;
 }
 .entry-button:active { background: var(--fill); transition: none; }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .entry-button:hover { background: var(--fill); }
 }
 
@@ -374,7 +376,7 @@ h1 {
   background: var(--thumb);
   box-shadow: var(--thumb-shadow);
   transform: translateX(calc(var(--i) * 100%));
-  transition: transform 350ms var(--ease-out);
+  transition: transform 250ms var(--ease-in-out);
 }
 
 .mode-hint {
@@ -407,7 +409,7 @@ h1 {
   background: var(--surface);
   box-shadow: 0 0 0 0.5px var(--hairline), 0 1px 1px rgba(0, 0, 0, 0.04);
   font-size: 1.0625rem;
-  transition: transform 150ms var(--ease-out), background-color 150ms ease-out;
+  transition: transform var(--press) var(--ease-out), background-color var(--press) ease;
 }
 .key.operator { font-size: 1.25rem; font-weight: 400; }
 .key.function {
@@ -415,7 +417,7 @@ h1 {
   font-size: 0.9375rem;
   color: var(--accent);
 }
-.key:active { transform: scale(0.94); background: var(--fill-strong); transition-duration: 50ms; }
+.key:active { transform: scale(0.95); background: var(--fill-strong); }
 
 .key-divider {
   flex: none;
@@ -459,9 +461,9 @@ h1 {
   font-size: 1.375rem;
   font-weight: 500;
   line-height: 1;
-  transition: transform 150ms var(--ease-out), opacity 150ms ease-out;
+  transition: transform var(--press) var(--ease-out), opacity var(--press) ease;
 }
-.equals:active { transform: scale(0.9); opacity: 0.8; transition-duration: 50ms; }
+.equals:active { transform: scale(0.9); opacity: 0.85; }
 
 /* Rejected input: a short damped shake, like a wrong passcode */
 .field.shake {
