@@ -106,6 +106,7 @@ function shake(): void {
   field.classList.add("shake");
 }
 field.addEventListener("animationend", () => field.classList.remove("shake"));
+input.addEventListener("input", () => field.classList.remove("shake"));
 
 // ---------- Evaluate ----------
 
