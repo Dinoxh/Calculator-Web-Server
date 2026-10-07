@@ -485,6 +485,19 @@ h1 {
   transition: transform 250ms var(--ease-in-out);
 }
 
+/* Once segmented.ts mounts, a spring drives the thumb; CSS only handles the press */
+.segmented.js { touch-action: pan-y; }
+.segmented.js .thumb {
+  transition: scale var(--press) var(--ease-out);
+  will-change: transform;
+}
+.segmented.pressed .thumb { scale: 0.95; }
+.segmented.js label:has(input:checked) { cursor: grab; }
+.segmented.dragging, .segmented.dragging * { cursor: grabbing; }
+/* While dragging, the segment under the thumb previews the selection */
+.segmented.dragging input:checked + span { font-weight: 500; color: inherit; }
+.segmented.dragging label.under span { font-weight: 600; color: var(--mode-ink); }
+
 .mode-hint {
   margin: 8px 2px 10px;
   min-height: 1.4em;
@@ -618,6 +631,7 @@ h1 {
   }
   .field.shake { animation: none; }
   .segmented .thumb { transition: none; }
+  .segmented.pressed .thumb { scale: none; }
   .chip:active, .key:active, .equals:active { transform: none; }
   .chip.changed { animation-name: chip-flash; }
   .equals.busy::after { animation: busy-pulse 1s ease-in-out infinite alternate; border-color: #ffffff; }

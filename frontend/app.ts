@@ -3,6 +3,7 @@ import { formatRaw } from "./format.js";
 import { mountVariables } from "./variables.js";
 import { mountKeypad } from "./keypad.js";
 import { flipTape } from "./flip.js";
+import { mountSegmented } from "./segmented.js";
 
 function $<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -63,6 +64,7 @@ try {
   if (radio) radio.checked = true;
 } catch { /* storage unavailable */ }
 showHint();
+mountSegmented($<HTMLFieldSetElement>("mode"), reducedMotion);
 
 // ---------- Tape ----------
 
