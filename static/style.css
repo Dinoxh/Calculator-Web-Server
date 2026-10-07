@@ -575,6 +575,20 @@ h1 {
 }
 .equals:active { transform: scale(0.9); opacity: 0.85; }
 
+/* Waiting on a slow server: the glyph gives way to a spinner (input stays usable) */
+.equals { position: relative; }
+.equals.busy { color: transparent; }
+.equals.busy::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* Rejected input: a short damped shake, like a wrong passcode */
 .field.shake {
   animation: shake 400ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
@@ -598,6 +612,8 @@ h1 {
   .segmented .thumb { transition: none; }
   .chip:active, .key:active, .equals:active { transform: none; }
   .chip.changed { animation-name: chip-flash; }
+  .equals.busy::after { animation: busy-pulse 1s ease-in-out infinite alternate; border-color: #ffffff; }
+  @keyframes busy-pulse { to { opacity: 0.3; } }
   @starting-style { .chips.ready .chip { transform: none; } }
 }
 

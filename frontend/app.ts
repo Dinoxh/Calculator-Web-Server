@@ -18,6 +18,7 @@ const input = $<HTMLInputElement>("input");
 const entries = $<HTMLOListElement>("entries");
 const modeHint = $<HTMLElement>("mode-hint");
 const resetButton = $<HTMLButtonElement>("reset");
+const equals = composer.querySelector<HTMLButtonElement>(".equals")!;
 const varsList = $<HTMLUListElement>("vars");
 const keys = $<HTMLElement>("keys");
 
@@ -132,7 +133,15 @@ composer.addEventListener("submit", (e) => {
   historyIndex = history.length;
 
   queue = queue.then(async () => {
+    // Spinner only if the server is slow; a fast response shouldn't flash it
+    const busy = setTimeout(() => {
+      equals.classList.add("busy");
+      composer.setAttribute("aria-busy", "true");
+    }, 150);
     const result = await evaluate(mode, line);
+    clearTimeout(busy);
+    equals.classList.remove("busy");
+    composer.removeAttribute("aria-busy");
     if (result.ok) {
       addEntry(mode, line, formatRaw(result.raw), false);
       if (input.value.trim() === line) input.value = "";
