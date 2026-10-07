@@ -1,5 +1,6 @@
 import { evaluate, resetVariables, type Endpoint } from "./api.js";
 import { formatRaw } from "./format.js";
+import { mountVariables } from "./variables.js";
 
 function $<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
@@ -15,6 +16,7 @@ const input = $<HTMLInputElement>("input");
 const entries = $<HTMLOListElement>("entries");
 const modeHint = $<HTMLElement>("mode-hint");
 const resetButton = $<HTMLButtonElement>("reset");
+const varsList = $<HTMLUListElement>("vars");
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -163,6 +165,10 @@ resetButton.addEventListener("click", () => {
     document.dispatchEvent(new CustomEvent("variables-changed"));
   });
 });
+
+// ---------- Variables ----------
+
+mountVariables(varsList, input);
 
 // ---------- Scroll edges ----------
 
